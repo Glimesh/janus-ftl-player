@@ -1,0 +1,29 @@
+{
+  "name": "janus-ftl-player",
+  "version": "0.0.1-alpha",
+  "description": "Simple player for Janus FTL streams",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haydenmc/janus-ftl-player.git"
+  },
+  "author": "Hayden McAfee <hayden@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/haydenmc/janus-ftl-player/issues"
+  },
+  "homepage": "https://github.com/haydenmc/janus-ftl-player#readme",
+  "devDependencies": {
+    "exports-loader": "^1.1.0",
+    "ts-loader": "^8.0.2",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "janus-gateway": "git://github.com/meetecho/janus-gateway.git"
+  }
+}
