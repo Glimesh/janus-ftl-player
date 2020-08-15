@@ -1,11 +1,6 @@
-/// <reference path="Janus.d.ts"/>
-import { Janus } from 'janus-gateway';
+import { FtlPlayer } from './FtlPlayer';
 
-alert("Hello world");
-
-Janus.init({
-    debug: "all",
-    callback: () => {
-        console.log("Janus is ready!");
-    }
+window.addEventListener("load", () => {
+    let player = new FtlPlayer();
+    player.init();
 });
