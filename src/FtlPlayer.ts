@@ -2,12 +2,14 @@ import { Janus, PluginHandle, Message, JSEP } from "janus-gateway";
 
 export class FtlPlayer {
     private static readonly janusPluginPackage = "janus.plugin.ftl";
+    private element: HTMLVideoElement;
+    private serverUri: string;
     static isJanusInitialized: boolean = false;
     private janusInstance: (Janus | null) = null;
-    private serverUri: string;
     private janusPluginHandle: (PluginHandle | null) = null;
 
-    constructor(serverUri: (string | null) = null) {
+    constructor(element: HTMLVideoElement, serverUri: (string | null) = null) {
+        this.element = element;
         if (serverUri)
         {
             this.serverUri = serverUri;
@@ -37,6 +39,9 @@ export class FtlPlayer {
             // Attach to FTL plugin
             this.janusPluginHandle = await this.attachToFtlPlugin();
             console.log("Attached to plugin!");
+
+            // Watch a hard-coded channel id
+            this.watchChannel(123456789);
         });
     }
 
@@ -94,21 +99,30 @@ export class FtlPlayer {
                         error: (error: string) => {
                             reject(error);
                         },
-                        consentDialog: this.onJanusConsentDialog,
-                        webrtcState: this.onJanusWebRtcState,
-                        iceState: this.onJanusIceState,
-                        mediaState: this.onJanusMediaState,
-                        slowLink: this.onJanusSlowLink,
-                        onmessage: this.onJanusMessage,
-                        onlocalstream: this.onJanusLocalStream,
-                        onremotestream: this.onJanusRemoteStream,
-                        ondataopen: this.onJanusDataOpen,
-                        ondata: this.onJanusData,
-                        oncleanup: this.onJanusCleanup,
-                        detached: this.onJanusDetached
+                        consentDialog: this.onJanusConsentDialog.bind(this),
+                        webrtcState: this.onJanusWebRtcState.bind(this),
+                        iceState: this.onJanusIceState.bind(this),
+                        mediaState: this.onJanusMediaState.bind(this),
+                        slowLink: this.onJanusSlowLink.bind(this),
+                        onmessage: this.onJanusMessage.bind(this),
+                        onlocalstream: this.onJanusLocalStream.bind(this),
+                        onremotestream: this.onJanusRemoteStream.bind(this),
+                        ondataopen: this.onJanusDataOpen.bind(this),
+                        ondata: this.onJanusData.bind(this),
+                        oncleanup: this.onJanusCleanup.bind(this),
+                        detached: this.onJanusDetached.bind(this)
                     });
                 }
             });
+    }
+
+    private watchChannel(channelId: number): void {
+        this.janusPluginHandle?.send({
+            message: {
+                request: "watch",
+                channelId: channelId
+            }
+        });
     }
 
     private onJanusConsentDialog(on: boolean): void {
@@ -138,6 +152,15 @@ export class FtlPlayer {
         {
             console.log("JSEP: ");
             console.log(jsep);
+            this.handleJsep(jsep)
+                .then((jsep: JSEP) => {
+                    console.log("Got jsep back!");
+                    var body = { request: "start" };
+                    this.janusPluginHandle?.send({ message: body, jsep: jsep });
+                })
+                .catch((error: Error) => {
+                    console.log("Error handling jsep: " + error);
+                });
         }
     }
 
@@ -147,6 +170,7 @@ export class FtlPlayer {
 
     private onJanusRemoteStream(stream: MediaStream): void {
         console.log("Janus remote stream");
+        Janus.attachMediaStream(this.element, stream);
     }
 
     private onJanusDataOpen(): void {
@@ -163,5 +187,21 @@ export class FtlPlayer {
 
     private onJanusDetached(): void {
         console.log("Janus detached.");
+    }
+
+    private async handleJsep(jsep: JSEP): Promise<JSEP> {
+        return new Promise<JSEP>(
+            async (resolve: (jsep: JSEP) => void, reject: (error: Error) => void) => {
+                this.janusPluginHandle?.createAnswer({
+                    jsep: jsep,
+                    media: { audioSend: false, videoSend: false, data: true },
+                    success: (jsep: JSEP) => {
+                        resolve(jsep);
+                    },
+                    error: (error: Error) => {
+                        reject(error);
+                    }
+                });
+            });
     }
 }
