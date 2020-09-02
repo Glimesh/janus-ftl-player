@@ -7,7 +7,9 @@ module.exports = {
         // janus.js does not use 'import' to access to the functionality of webrtc-adapter,
         // instead it expects a global object called 'adapter' for that.
         // Let's make that object available.
-        new webpack.ProvidePlugin({ adapter: 'webrtc-adapter' })
+        new webpack.ProvidePlugin({
+            adapter: 'webrtc-adapter'
+        })
     ],
     module: {
         rules: [
@@ -34,5 +36,8 @@ module.exports = {
     output: {
         filename: 'main.js',
         path: path.resolve(__dirname, 'dist'),
+        libraryTarget: 'umd',
+        library: 'JanusFtlPlayer',
+        umdNamedDefine: true
     },
 };

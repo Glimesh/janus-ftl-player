@@ -10,25 +10,20 @@ export class FtlPlayer {
 
     constructor(element: HTMLVideoElement, serverUri: (string | null) = null) {
         this.element = element;
-        if (serverUri)
-        {
+        if (serverUri) {
             this.serverUri = serverUri;
-        }
-        else
-        {
+        } else {
             // Assume we're connecting to the same machine
-            if(window.location.protocol === 'http:')
-            {
+            if (window.location.protocol === 'http:') {
                 this.serverUri = "http://" + window.location.hostname + ":8088/janus";
             }
-            else
-            {
+            else {
                 this.serverUri = "https://" + window.location.hostname + ":8089/janus";
             }
         }
     }
 
-    public async init(): Promise<void> {
+    public async init(channelId: number): Promise<void> {
         return new Promise<void>(async (resolve: () => void, reject: () => void) => {
             // Init Janus if it isn't already
             await FtlPlayer.initJanus();
@@ -41,7 +36,7 @@ export class FtlPlayer {
             console.log("Attached to plugin!");
 
             // Watch a hard-coded channel id
-            this.watchChannel(123456789);
+            this.watchChannel(channelId);
         });
     }
 
@@ -56,9 +51,7 @@ export class FtlPlayer {
                         resolve();
                     }
                 });
-            }
-            else
-            {
+            } else {
                 resolve();
             }
         });
@@ -84,12 +77,9 @@ export class FtlPlayer {
     private async attachToFtlPlugin(): Promise<PluginHandle> {
         return new Promise<PluginHandle>(
             async (resolve: (result: PluginHandle) => void, reject: (error: string) => void) => {
-                if (this.janusInstance === null)
-                {
+                if (this.janusInstance === null) {
                     reject("No Janus instance!");
-                }
-                else
-                {
+                } else {
                     this.janusInstance.attach({
                         plugin: FtlPlayer.janusPluginPackage,
                         //TODO: opaqueId: 
@@ -148,8 +138,7 @@ export class FtlPlayer {
     private onJanusMessage(message: Message, jsep?: JSEP): void {
         console.log("Janus message: ");
         console.log(JSON.stringify(message));
-        if (jsep)
-        {
+        if (jsep) {
             console.log("JSEP: ");
             console.log(jsep);
             this.handleJsep(jsep)
