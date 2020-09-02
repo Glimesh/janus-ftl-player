@@ -1,22 +1,65 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>FTL Test</title>
-        <style>
-            body {
-                margin: 0;
-                background-color: #000000;
-            }
-            video {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-            }
-        </style>
-    </head>
-    <body>
-        <script src="main.js"></script>
-    </body>
+<html lang="en">
 
-    <video autoplay></video>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTL Test Player</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #000000;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100vw;
+            height: calc(100vh - 41px);
+        }
+
+        form {
+            padding: 10px;
+        }
+
+        form label {
+            color: white;
+        }
+
+        #janusServerUri {
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="playerForm" action="">
+        <label for="janusServerUri">Janus Server URI</label>
+        <input id="janusServerUri" type="text" value="http://localhost:8088/janus">
+
+        <label for="channelId">Channel ID</label>
+        <input id="channelId" type="number" value="1">
+
+        <input type="submit" value="Load Player">
+    </form>
+
+    <video autoplay controls></video>
+
+    <script type="module" src="main.js"></script>
+    <script>
+        window.addEventListener("load", () => {
+            let form = document.getElementById("playerForm");
+            let janusServerUri = document.getElementById("janusServerUri");
+            let channelId = document.getElementById("channelId");
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                // If you're loading this via NPM, you do not need the JanusFtlPlayer.
+                let player = new JanusFtlPlayer.FtlPlayer(document.querySelector("video"), janusServerUri.value);
+                player.init(parseInt(channelId.value));
+            });
+        });
+    </script>
+</body>
+
 </html>
