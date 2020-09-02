@@ -11,11 +11,11 @@ Simple player for Janus FTL streams
 ### NPM
 First, you'll need to install the dependency
 
-    $ npm install --save @glimesh/janus-ftl-player
+    $ npm install --save janus-ftl-player
 
 And then you can use it in your modules like so:
 ```javascript
-import { FtlPlayer } from "@glimesh/janus-ftl-player";
+import { FtlPlayer } from "janus-ftl-player";
 
 let videoContainer = document.querySelector("video");
 let janusEndpoint = "http://localhost:8088/janus";
@@ -39,4 +39,4 @@ You can find a working example in `dist/index.html`
 
 ## License
 
-Coming soon.
+[MIT License](LICENSE.md)
