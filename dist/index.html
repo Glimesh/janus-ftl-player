@@ -51,6 +51,9 @@
             let janusServerUri = document.getElementById("janusServerUri");
             let channelId = document.getElementById("channelId");
 
+            // Default to the same endpoint
+            janusServerUri.value = `${window.location.protocol}//${window.location.host}:8088/janus`;
+
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
 
