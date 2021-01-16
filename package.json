@@ -5,7 +5,8 @@
   "main": "dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --config webpack.config.js --watch",
+    "start": "webpack serve --mode development --open",
+    "watch": "webpack --config webpack.config.js --mode development --watch",
     "build": "webpack --config webpack.config.js --mode production"
   },
   "repository": {
@@ -19,11 +20,12 @@
   },
   "homepage": "https://github.com/Glimesh/janus-ftl-player#readme",
   "devDependencies": {
+    "@webpack-cli/serve": "^1.2.1",
     "exports-loader": "^1.1.0",
     "ts-loader": "^8.0.2",
     "typescript": "^3.9.7",
     "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
     "janus-gateway": "git://github.com/meetecho/janus-gateway.git"

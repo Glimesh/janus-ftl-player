@@ -40,4 +40,9 @@ module.exports = {
         library: 'JanusFtlPlayer',
         umdNamedDefine: true
     },
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: false,
+        port: 9000
+    }
 };

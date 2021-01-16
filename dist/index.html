@@ -39,10 +39,11 @@
         <label for="channelId">Channel ID</label>
         <input id="channelId" type="number" value="1">
 
-        <input type="submit" value="Load Player">
+        <input type="submit" value="Load Player & Play">
+        <button type="button" class="destroy">Destroy</button>
     </form>
 
-    <video autoplay controls></video>
+    <video controls muted></video>
 
     <script type="module" src="main.js"></script>
     <script>
@@ -50,17 +51,39 @@
             let form = document.getElementById("playerForm");
             let janusServerUri = document.getElementById("janusServerUri");
             let channelId = document.getElementById("channelId");
+            let videoEl = document.querySelector("video");
+            let player;
 
             // Default to the same endpoint
             janusServerUri.value = `${window.location.protocol}//${window.location.host}:8088/janus`;
+
+            document.querySelector(".destroy").addEventListener("click", () => {
+                player.destroy();
+            })
 
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
 
                 // If you're loading this via NPM, you do not need the JanusFtlPlayer.
-                let player = new JanusFtlPlayer.FtlPlayer(document.querySelector("video"), janusServerUri.value);
+                player = new JanusFtlPlayer.FtlPlayer(videoEl, janusServerUri.value, {
+                    debug: true
+                });
                 player.init(parseInt(channelId.value));
             });
+
+            // Wait for the video element to get data before playing
+            videoEl.addEventListener("loadeddata", function () {
+                let playPromise = videoEl.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        // Autoplay started!
+                    }).catch(error => {
+                        alert(
+                            "Video autoplay was prevented by your browser, hit the Play button!"
+                        )
+                    });
+                }
+            })
         });
     </script>
 </body>
