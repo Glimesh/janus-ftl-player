@@ -2,7 +2,7 @@ import { Janus, PluginHandle, Message, JSEP } from "janus-gateway";
 
 type Options = {
     debug?: boolean,
-    hideMediaControls?: boolean
+    hideTimelineControl?: boolean
 }
 
 export class FtlPlayer {
@@ -19,19 +19,18 @@ export class FtlPlayer {
         // Allow configuring additional options
         this.options = {
             debug: true,
-            hideMediaControls: true
+            hideTimelineControl: true
         };
         Object.assign(this.options, options);
 
         this.element = element;
 
-        if (this.options.hideMediaControls) {
+        if (this.options.hideTimelineControl) {
             let uniqueClass = "janus-ftl-player-" + Math.floor(Math.random() * 10000)
             this.element.classList.add(uniqueClass);
 
             let videoStyle = document.createElement("style");
             videoStyle.appendChild(document.createTextNode(`
-            .${uniqueClass}::-webkit-media-controls-timeline,
             .${uniqueClass}::-webkit-media-controls-timeline {
                 display: none;
             }
@@ -52,7 +51,7 @@ export class FtlPlayer {
         }
     }
 
-    public debug(...messages: any[]): void {
+    private debug(...messages: any[]): void {
         if (this.options.debug) {
             console.debug(this.logPrefix, ...messages)
         }
