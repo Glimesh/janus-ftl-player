@@ -1,15 +1,43 @@
 import { Janus, PluginHandle, Message, JSEP } from "janus-gateway";
 
+type Options = {
+    debug?: boolean,
+    hideTimelineControl?: boolean
+}
+
 export class FtlPlayer {
     private static readonly janusPluginPackage = "janus.plugin.ftl";
+    private readonly logPrefix = "janus-ftl-player:";
     private element: HTMLVideoElement;
     private serverUri: string;
     static isJanusInitialized: boolean = false;
     private janusInstance: (Janus | null) = null;
     private janusPluginHandle: (PluginHandle | null) = null;
+    private options: Options;
 
-    constructor(element: HTMLVideoElement, serverUri: (string | null) = null) {
+    constructor(element: HTMLVideoElement, serverUri: (string | null) = null, options: Options) {
+        // Allow configuring additional options
+        this.options = {
+            debug: true,
+            hideTimelineControl: true
+        };
+        Object.assign(this.options, options);
+
         this.element = element;
+
+        if (this.options.hideTimelineControl) {
+            let uniqueClass = "janus-ftl-player-" + Math.floor(Math.random() * 10000)
+            this.element.classList.add(uniqueClass);
+
+            let videoStyle = document.createElement("style");
+            videoStyle.appendChild(document.createTextNode(`
+            .${uniqueClass}::-webkit-media-controls-timeline {
+                display: none;
+            }
+            `));
+            document.head.appendChild(videoStyle);
+        }
+
         if (serverUri) {
             this.serverUri = serverUri;
         } else {
@@ -23,31 +51,46 @@ export class FtlPlayer {
         }
     }
 
+    private debug(...messages: any[]): void {
+        if (this.options.debug) {
+            console.debug(this.logPrefix, ...messages)
+        }
+    }
+
     public async init(channelId: number): Promise<void> {
         return new Promise<void>(async (resolve: () => void, reject: () => void) => {
             // Init Janus if it isn't already
-            await FtlPlayer.initJanus();
+            await this.initJanus();
 
             // Create Janus session
             this.janusInstance = await FtlPlayer.createJanusInstance(this.serverUri); // TODO: Catch connection error
 
             // Attach to FTL plugin
             this.janusPluginHandle = await this.attachToFtlPlugin();
-            console.log("Attached to plugin!");
+            this.debug("Attached to plugin!");
 
             // Watch a hard-coded channel id
             this.watchChannel(channelId);
         });
     }
 
-    private static async initJanus(): Promise<void> {
+    public async destroy(): Promise<void> {
+        return new Promise<void>(async (resolve: () => void, reject: () => void) => {
+            if (FtlPlayer.isJanusInitialized) {
+                this.janusInstance?.destroy();
+            }
+            resolve();
+        });
+    }
+
+    private async initJanus(): Promise<void> {
         return new Promise<void>(async (resolve: () => void, reject: () => void) => {
             if (!FtlPlayer.isJanusInitialized) {
                 Janus.init({
-                    debug: "all",
+                    debug: this.options.debug,
                     callback: () => {
                         FtlPlayer.isJanusInitialized = true;
-                        console.log("Janus is initialized!");
+                        this.debug("Janus is initialized!");
                         resolve();
                     }
                 });
@@ -116,66 +159,64 @@ export class FtlPlayer {
     }
 
     private onJanusConsentDialog(on: boolean): void {
-        console.log("Janus consent dialog " + on);
+        this.debug("Janus consent dialog " + on);
     }
 
     private onJanusWebRtcState(isConnected: boolean): void {
-        console.log("Janus WebRTC state: " + isConnected);
+        this.debug("Janus WebRTC state: " + isConnected);
     }
 
     private onJanusIceState(state: 'connected' | 'failed'): void {
-        console.log("Janus ICE state: " + state);
+        this.debug("Janus ICE state: " + state);
     }
 
     private onJanusMediaState(state: { type: 'audio' | 'video'; on: boolean }): void {
-        console.log("Janus media state: " + state.type + " = " + state.on);
+        this.debug("Janus media state: " + state.type + " = " + state.on);
     }
 
     private onJanusSlowLink(state: { uplink: boolean }): void {
-        console.log("Janus slow link: " + state.uplink);
+        this.debug("Janus slow link: " + state.uplink);
     }
 
     private onJanusMessage(message: Message, jsep?: JSEP): void {
-        console.log("Janus message: ");
-        console.log(JSON.stringify(message));
+        this.debug("Janus message: ", JSON.stringify(message));
         if (jsep) {
-            console.log("JSEP: ");
-            console.log(jsep);
+            this.debug("JSEP:", jsep);
             this.handleJsep(jsep)
                 .then((jsep: JSEP) => {
-                    console.log("Got jsep back!");
+                    this.debug("Got jsep back!");
                     var body = { request: "start" };
                     this.janusPluginHandle?.send({ message: body, jsep: jsep });
                 })
                 .catch((error: Error) => {
-                    console.log("Error handling jsep: " + error);
+                    this.debug("Error handling jsep: " + error);
                 });
         }
     }
 
     private onJanusLocalStream(stream: MediaStream): void {
-        console.log("Janus local stream");
+        this.debug("Janus local stream");
     }
 
     private onJanusRemoteStream(stream: MediaStream): void {
-        console.log("Janus remote stream");
+        this.debug("Janus remote stream");
         Janus.attachMediaStream(this.element, stream);
     }
 
     private onJanusDataOpen(): void {
-        console.log("Janus data open");
+        this.debug("Janus data open");
     }
 
     private onJanusData(data: string): void {
-        console.log("Janus data: " + data);
+        this.debug("Janus data: " + data);
     }
 
     private onJanusCleanup(): void {
-        console.log("Janus cleanup");
+        this.debug("Janus cleanup");
     }
 
     private onJanusDetached(): void {
-        console.log("Janus detached.");
+        this.debug("Janus detached.");
     }
 
     private async handleJsep(jsep: JSEP): Promise<JSEP> {
@@ -193,4 +234,5 @@ export class FtlPlayer {
                 });
             });
     }
+
 }
