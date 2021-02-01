@@ -1,6 +1,6 @@
 {
   "name": "janus-ftl-player",
-  "version": "0.0.2-alpha",
+  "version": "0.0.3-alpha",
   "description": "Simple player for Janus FTL streams",
   "main": "dist/main.js",
   "scripts": {
@@ -28,6 +28,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "janus-gateway": "git://github.com/meetecho/janus-gateway.git"
+    "janus-gateway": "meetecho/janus-gateway"
   }
 }
