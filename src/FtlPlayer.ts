@@ -15,7 +15,7 @@ export class FtlPlayer {
     private janusPluginHandle: (PluginHandle | null) = null;
     private options: Options;
 
-    constructor(element: HTMLVideoElement, serverUri: (string | null) = null, options: Options) {
+    constructor(element: HTMLVideoElement, serverUri: (string | null) = null, options: Options = { }) {
         // Allow configuring additional options
         this.options = {
             debug: true,
