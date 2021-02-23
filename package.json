@@ -1,8 +1,9 @@
 {
   "name": "janus-ftl-player",
-  "version": "0.0.3-alpha",
+  "version": "0.0.4-alpha",
   "description": "Simple player for Janus FTL streams",
   "main": "dist/main.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --mode development --open",
