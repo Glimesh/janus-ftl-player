@@ -2,7 +2,10 @@ import { Janus, PluginHandle, Message, JSEP } from "janus-gateway";
 
 type Options = {
     debug?: boolean,
-    hideTimelineControl?: boolean
+    hideTimelineControl?: boolean,
+    hooks?: {
+        janusSlowLink?: (uplink: boolean, lost: number) => void;
+    }
 }
 
 export class FtlPlayer {
@@ -15,7 +18,7 @@ export class FtlPlayer {
     private janusPluginHandle: (PluginHandle | null) = null;
     private options: Options;
 
-    constructor(element: HTMLVideoElement, serverUri: (string | null) = null, options: Options = { }) {
+    constructor(element: HTMLVideoElement, serverUri: (string | null) = null, options: Options = {}) {
         // Allow configuring additional options
         this.options = {
             debug: true,
@@ -174,8 +177,20 @@ export class FtlPlayer {
         this.debug("Janus media state: " + state.type + " = " + state.on);
     }
 
-    private onJanusSlowLink(state: { uplink: boolean }): void {
-        this.debug("Janus slow link: " + state.uplink);
+    /*
+     * slowLink: this callback is triggered when Janus reports trouble either sending or receiving media on 
+     * the specified PeerConnection, typically as a consequence of too many NACKs received from/sent to the 
+     * user in the last second: 
+     *   for instance, a slowLink with uplink=true means you notified several missing packets from Janus, 
+     *   while uplink=false means Janus is not receiving all your packets; 
+     *   useful to figure out when there are problems on the media path (e.g., excessive loss), 
+     *   in order to possibly react accordingly (e.g., decrease the bitrate if most of our packets are getting lost);
+    */
+    private onJanusSlowLink(uplink: boolean, lost: number): void {
+        this.debug(`Janus slow link: uplink=${uplink} lost=${lost}`);
+        if (this.options.hooks?.janusSlowLink) {
+            this.options.hooks.janusSlowLink(uplink, lost);
+        }
     }
 
     private onJanusMessage(message: Message, jsep?: JSEP): void {
@@ -185,6 +200,7 @@ export class FtlPlayer {
             this.handleJsep(jsep)
                 .then((jsep: JSEP) => {
                     this.debug("Got jsep back!");
+                    this.debug(jsep);
                     var body = { request: "start" };
                     this.janusPluginHandle?.send({ message: body, jsep: jsep });
                 })

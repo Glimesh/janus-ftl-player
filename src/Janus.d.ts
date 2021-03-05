@@ -15,7 +15,7 @@ declare module "janus-gateway" {
 		Error = 'error'
 	}
 
-	interface JSEP {}
+	interface JSEP { }
 
 	interface InitOptions {
 		debug?: boolean | 'all' | DebugLevel[];
@@ -65,7 +65,7 @@ declare module "janus-gateway" {
 		webrtcState?: (isConnected: boolean) => void;
 		iceState?: (state: 'connected' | 'failed') => void;
 		mediaState?: (state: { type: 'audio' | 'video'; on: boolean }) => void;
-		slowLink?: (state: { uplink: boolean }) => void;
+		slowLink?: (uplink: boolean, lost: number) => void;
 		onmessage?: (message: Message, jsep?: JSEP) => void;
 		onlocalstream?: (stream: MediaStream) => void;
 		onremotestream?: (stream: MediaStream) => void;
