@@ -83,14 +83,14 @@ declare module "janus-gateway-mirror" {
 			videoRecv?: boolean;
 			audio?: boolean | { deviceId: string };
 			video?:
-			| boolean
-			| { deviceId: string }
-			| 'lowres'
-			| 'lowres-16:9'
-			| 'stdres'
-			| 'stdres-16:9'
-			| 'hires'
-			| 'hires-16:9';
+				| boolean
+				| { deviceId: string }
+				| 'lowres'
+				| 'lowres-16:9'
+				| 'stdres'
+				| 'stdres-16:9'
+				| 'hires'
+				| 'hires-16:9';
 			data?: boolean;
 			failIfNoAudio?: boolean;
 			failIfNoVideo?: boolean;
