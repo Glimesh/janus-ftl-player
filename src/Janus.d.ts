@@ -1,4 +1,4 @@
-declare module "janus-gateway" {
+declare module "janus-gateway-mirror" {
 	interface Dependencies {
 		adapter: any;
 		newWebSocket: (server: string, protocol: string) => WebSocket;

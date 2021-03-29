@@ -8,7 +8,7 @@ module.exports = {
         // instead it expects a global object called 'adapter' for that.
         // Let's make that object available.
         new webpack.ProvidePlugin({
-            adapter: 'webrtc-adapter'
+            adapter: ['webrtc-adapter', 'default']
         })
     ],
     module: {
@@ -17,7 +17,7 @@ module.exports = {
             // it creates a global variable called 'Janus' and expects consumers to use it.
             // Let's use 'exports-loader' to simulate it uses 'export'.
             {
-                test: require.resolve('janus-gateway'),
+                test: require.resolve('janus-gateway-mirror'),
                 loader: 'exports-loader',
                 options: {
                     exports: 'Janus',
