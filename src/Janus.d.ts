@@ -1,4 +1,4 @@
-declare module "janus-gateway" {
+declare module "janus-gateway-mirror" {
 	interface Dependencies {
 		adapter: any;
 		newWebSocket: (server: string, protocol: string) => WebSocket;
@@ -83,14 +83,14 @@ declare module "janus-gateway" {
 			videoRecv?: boolean;
 			audio?: boolean | { deviceId: string };
 			video?:
-				| boolean
-				| { deviceId: string }
-				| 'lowres'
-				| 'lowres-16:9'
-				| 'stdres'
-				| 'stdres-16:9'
-				| 'hires'
-				| 'hires-16:9';
+			| boolean
+			| { deviceId: string }
+			| 'lowres'
+			| 'lowres-16:9'
+			| 'stdres'
+			| 'stdres-16:9'
+			| 'hires'
+			| 'hires-16:9';
 			data?: boolean;
 			failIfNoAudio?: boolean;
 			failIfNoVideo?: boolean;

@@ -1,4 +1,4 @@
-import { Janus, PluginHandle, Message, JSEP } from "janus-gateway";
+import { Janus, PluginHandle, Message, JSEP } from "janus-gateway-mirror";
 
 type Options = {
     debug?: boolean,

@@ -37,6 +37,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "janus-gateway": "meetecho/janus-gateway"
+    "janus-gateway-mirror": "^0.7.5"
   }
 }
