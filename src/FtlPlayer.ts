@@ -241,6 +241,11 @@ export class FtlPlayer {
                 this.janusPluginHandle?.createAnswer({
                     jsep: jsep,
                     media: { audioSend: false, videoSend: false, data: true },
+                    customizeSdp: function(jsep: JSEP) {
+                        if (jsep.sdp.indexOf("stereo=1") == -1) {
+                            jsep.sdp = jsep.sdp.replace("useinbandfec=1", "useinbandfec=1;stereo=1");
+                        }
+                    },
                     success: (jsep: JSEP) => {
                         resolve(jsep);
                     },

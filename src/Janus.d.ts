@@ -15,7 +15,10 @@ declare module "janus-gateway-mirror" {
 		Error = 'error'
 	}
 
-	interface JSEP { }
+	interface JSEP {
+		sdp: string
+		type: string
+	}
 
 	interface InitOptions {
 		debug?: boolean | 'all' | DebugLevel[];
