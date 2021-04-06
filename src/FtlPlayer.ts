@@ -242,6 +242,8 @@ export class FtlPlayer {
                     jsep: jsep,
                     media: { audioSend: false, videoSend: false, data: true },
                     customizeSdp: function(jsep: JSEP) {
+                        // HACK: Workaround for Chromium not enabling stereo audio by default
+                        // https://bugs.chromium.org/p/webrtc/issues/detail?id=8133
                         if (jsep.sdp.indexOf("stereo=1") == -1) {
                             jsep.sdp = jsep.sdp.replace("useinbandfec=1", "useinbandfec=1;stereo=1");
                         }
