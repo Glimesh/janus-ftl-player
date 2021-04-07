@@ -1,6 +1,6 @@
 {
   "name": "janus-ftl-player",
-  "version": "0.0.9-alpha",
+  "version": "0.0.10-alpha",
   "description": "Simple player for Janus FTL streams",
   "main": "dist/main.js",
   "types": "dist/index.d.ts",
