@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTL Test Player</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #000000;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100vw;
+            height: calc(100vh - 41px);
+        }
+
+        form {
+            padding: 10px;
+        }
+
+        form label {
+            color: white;
+        }
+
+        #janusServerUri {
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="playerForm" action="">
+        <label for="janusServerUri">Janus Server URI</label>
+        <input id="janusServerUri" type="text" value="http://localhost:8088/janus">
+
+        <label for="channelId">Channel ID</label>
+        <input id="channelId" type="number" value="1">
+
+        <input type="submit" value="Load Player & Play">
+        <button type="button" class="destroy">Destroy</button>
+    </form>
+
+    <video controls muted></video>
+
+    <script type="module" src="main.js"></script>
+    <script>
+        window.addEventListener("load", () => {
+            let form = document.getElementById("playerForm");
+            let janusServerUri = document.getElementById("janusServerUri");
+            let channelId = document.getElementById("channelId");
+            let videoEl = document.querySelector("video");
+            let player;
+
+            // Default to the same endpoint
+            janusServerUri.value = `${window.location.protocol}//${window.location.host}:8088/janus`;
+
+            document.querySelector(".destroy").addEventListener("click", () => {
+                player.destroy();
+            })
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                // If you're loading this via NPM, you do not need the JanusFtlPlayer.
+                player = new JanusFtlPlayer.FtlPlayer(videoEl, janusServerUri.value, {
+                    debug: true
+                });
+                player.init(parseInt(channelId.value));
+            });
+
+            // Wait for the video element to get data before playing
+            videoEl.addEventListener("loadeddata", function () {
+                let playPromise = videoEl.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        // Autoplay started!
+                    }).catch(error => {
+                        alert(
+                            "Video autoplay was prevented by your browser, hit the Play button!"
+                        )
+                    });
+                }
+            })
+        });
+    </script>
+</body>
+
+</html>
